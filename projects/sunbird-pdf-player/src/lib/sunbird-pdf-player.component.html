@@ -1,0 +1,39 @@
+<div class="sunbird-pdf-palyer-container" #pdfPlayer>
+  <sb-player-start-page *ngIf="viewState === 'start'" [title]="viewerService.contentName"
+    [progress]="viewerService.loadingProgress"></sb-player-start-page>
+
+  <sb-player-header class="sb-pdf-main-header notVisible" [ngClass]="{'isVisible': showControls}"
+    *ngIf="viewState ==='player'" [pageNumber]="viewerService.currentPagePointer" [config]="headerConfig"
+    [totalPages]="viewerService.totalNumberOfPages" (actions)="headerActions($event)"></sb-player-header>
+  <sb-player-side-menu-icon class="notVisible" (sidebarMenuEvent)="sideBarEvents($event)"
+    *ngIf="viewState ==='player'" [ngClass]="{'isVisible': showControls}">
+    </sb-player-side-menu-icon>
+    <span [style.display]="viewState ==='player' ? 'inline': 'none'">
+      <pdf-viewer (viewerEvent)="viewerEvent($event)" [pdfURL]="viewerService.src"
+        [actions]="viewerActions"></pdf-viewer>
+    </span>
+    <sb-player-sidebar *ngIf="viewState ==='player'" [title]="viewerService.contentName"
+      (sidebarEvent)="sideBarEvents($event)" [config]="sideMenuConfig"></sb-player-sidebar>
+
+    <div class="sb-pdf-reading-status" *ngIf="viewState ==='player'">Page {{viewerService.currentPagePointer}} of
+      {{viewerService.totalNumberOfPages}} <span></span>
+      {{((viewerService.currentPagePointer/viewerService.totalNumberOfPages) * 100).toFixed(0)}}%</div>
+    <div class="visible-only-potrait BtmNotVisible" [ngClass]="{'isVisible': showControls}"
+      *ngIf="viewState ==='player'">
+      <div class="sbt-pdf-footer">
+        <div class="d-flex pdf-slides" style="float: right;">
+          <sb-player-previous-navigation class="d-flex flex-ai-center flex-jc-center" (previousAction)="headerActions($event)"></sb-player-previous-navigation>
+          <sb-player-next-navigation  class="d-flex flex-ai-center flex-jc-center" (nextAction)="headerActions($event)"></sb-player-next-navigation>
+        </div>
+      </div>
+    </div>
+    <sb-player-end-page [contentName]="viewerService.contentName"  [outcomeLabel]="'Pages read:'" [outcome]="viewerService.currentPagePointer"
+      [userName]="viewerService.userName" [nextContent]="nextContent" [timeSpentLabel]="viewerService.timeSpent"
+      (replayContent)="replayContent($event)" (exitContent)="exitContent($event)" (playNextContent)="playContent($event)" [showExit]="sideMenuConfig.showExit" *ngIf="viewState === 'end'"></sb-player-end-page>
+     <sb-player-contenterror *ngIf="showContentError"></sb-player-contenterror>
+</div>
+
+<div class="pagenotfound__tooltip" *ngIf="!validPage">
+  <div class="pagenotfound__icon"></div>
+  <div class="pagenotfound__text">Page Not Found</div>
+</div>

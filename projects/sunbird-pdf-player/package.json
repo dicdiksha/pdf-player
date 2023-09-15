@@ -1,0 +1,29 @@
+{
+  "name": "@dictrigyn/pdf-player",
+  "version": "0.0.9",
+  "peerDependencies": {
+    "@angular/common": ">= 9.1.12",
+    "@angular/core": ">= 9.1.12",
+    "@project-sunbird/client-services": ">= 3.4.8",
+    "@project-sunbird/sb-styles": ">= 0.0.7"
+  },
+  "dependencies": {
+    "@project-sunbird/sunbird-player-sdk-v9": "4.6.4"
+  },
+  "homepage": "https://github.com/project-sunbird/sunbird-pdf-player/blob/release-4.8.0/README.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dictrigyn/pdf-player.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
+  "keywords": [
+    "sunbird, pdf player, project-sunbird"
+  ],
+  "license": "MIT",
+  "schematics": "./schematics/collection.json",
+  "ng-add": {
+    "save": "devDependencies"
+  }
+}
