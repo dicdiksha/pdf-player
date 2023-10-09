@@ -1,6 +1,6 @@
 {
-  "name": "@dictrigyn/pdf-player",
-  "version": "0.0.9",
+  "name": "@dicdiksha/pdf-player",
+  "version": "0.0.10",
   "peerDependencies": {
     "@angular/common": ">= 9.1.12",
     "@angular/core": ">= 9.1.12",
@@ -13,7 +13,7 @@
   "homepage": "https://github.com/project-sunbird/sunbird-pdf-player/blob/release-4.8.0/README.md",
   "repository": {
     "type": "git",
-    "url": "https://github.com/dictrigyn/pdf-player.git"
+    "url": "https://github.com/dicdiksha/pdf-player.git"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/"

@@ -1,6 +1,6 @@
 {
-  "name": "@dictrigyn/pdf-player",
-  "version": "0.0.9",
+  "name": "@dicdiksha/pdf-player",
+  "version": "0.0.10",
   "scripts": {
     "start": "ng serve",
     "start-lib": "watch 'npm run build-lib' projects",
@@ -31,6 +31,7 @@
     "@angular/platform-browser": "9.1.12",
     "@angular/platform-browser-dynamic": "9.1.12",
     "@angular/router": "9.1.12",
+    "@dicdiksha/pdf-player": "file:dist/sunbird-pdf-player/dicdiksha-pdf-player-0.0.10.tgz",
     "@dictrigyn/pdf-player": "file:dist/sunbird-pdf-player/dictrigyn-pdf-player-0.0.9.tgz",
     "@project-sunbird/client-services": "^3.4.8",
     "@project-sunbird/sb-styles": "0.0.7",
