@@ -146,15 +146,16 @@ export class PdfViewerComponent implements AfterViewInit {
     if(pageNumber !== this.viewerService.totalNumberOfPages) {
       return;
     }
-    const viewerContainer =  this.iframeRef.nativeElement.contentDocument.getElementById('viewerContainer');
-    if (viewerContainer) {
-      viewerContainer.onscroll = (e: any) => {
-        if (Math.ceil(e.target.offsetHeight + e.target.scrollTop) >= e.target.scrollHeight && this.isNextLastPageClicked == false) {
-          this.viewerEvent.emit({ type: 'pageend' });
-        }
-        this.isNextLastPageClicked = false
-      };
+
+    // const viewerContainer =  this.iframeRef.nativeElement.contentDocument.getElementById('viewerContainer');
+    // if (viewerContainer) {
+    //   viewerContainer.onscroll = (e: any) => {
+    //     if (Math.ceil(e.target.offsetHeight + e.target.scrollTop) >= e.target.scrollHeight && this.isNextLastPageClicked == false) {
+    //       this.viewerEvent.emit({ type: 'pageend' });
+    //     }
+    //     this.isNextLastPageClicked = false
+    //   };
       
-    }
+    // }
   }
 }

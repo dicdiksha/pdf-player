@@ -1,6 +1,6 @@
 {
   "name": "@dicdiksha/pdf-player",
-  "version": "0.0.10",
+  "version": "0.0.1",
   "scripts": {
     "start": "ng serve",
     "start-lib": "watch 'npm run build-lib' projects",
@@ -31,8 +31,7 @@
     "@angular/platform-browser": "9.1.12",
     "@angular/platform-browser-dynamic": "9.1.12",
     "@angular/router": "9.1.12",
-    "@dicdiksha/pdf-player": "file:dist/sunbird-pdf-player/dicdiksha-pdf-player-0.0.10.tgz",
-    "@dictrigyn/pdf-player": "file:dist/sunbird-pdf-player/dictrigyn-pdf-player-0.0.9.tgz",
+    "@dicdiksha/pdf-player": "file:dist/sunbird-pdf-player/dicdiksha-pdf-player-0.0.1.tgz",
     "@project-sunbird/client-services": "^3.4.8",
     "@project-sunbird/sb-styles": "0.0.7",
     "@project-sunbird/sunbird-pdf-player-v9": "^4.8.0",
@@ -71,7 +70,7 @@
     "tsickle": "0.37.1",
     "tslib": "^1.9.0",
     "tslint": "~5.11.0",
-    "typescript": "^3.8.3",
+    "typescript": "^3.8.2",
     "watch": "^1.0.2",
     "wrench": "^1.5.9"
   }
