@@ -242,3 +242,28 @@ Follow below-mentioned steps to use it in plain javascript project:
 	**Note:** There are some request for which we need to run this on server, so we need to run this on server for demo purpose we are using [http-server](https://www.npmjs.com/package/http-server).
 
 - ![demo](https://github.com/project-sunbird/sunbird-pdf-player/blob/release-4.5.0/web-component/pdf-player-wc.png)
+
+
+
+
+## Latest Installation, Build and Publish Process 2024
+Node 16.x.x
+
+##Installation
+1. Go inside folder and use npm command to install npm dependency (npm i).
+2. Go Inside by command : cd projects/sunbird-pdf-player/ and install npm dependency (npm i).
+
+
+##Build Steps
+1. ng build sunbird-pdf-player
+2. node assets-copy.js
+3. ./node_modules/.bin/tsc -p tsconfig.schematics.json
+4. cd dist/sunbird-pdf-player
+5. npm pack
+
+
+##Publish 
+1. Go inside dist/sunbird-pdf-player
+2. Use command : npm publish  OR npm publish --access=public OR npm publish --access=public --otp=xxxx
+3. Use credentials if asked 
+4. Check deployed version https://www.npmjs.com/package/@dicdikshaorg/pdf-player?activeTab=versions 
