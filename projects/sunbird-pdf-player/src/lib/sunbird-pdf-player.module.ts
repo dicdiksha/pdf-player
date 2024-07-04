@@ -3,7 +3,8 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SunbirdPdfPlayerComponent } from './sunbird-pdf-player.component';
 import { PdfViewerComponent } from './pdf-viewer/pdf-viewer.component';
-import { SunbirdPlayerSdkModule  } from '@project-sunbird/sunbird-player-sdk-v9';
+// import { SunbirdPlayerSdkModule  } from '@project-sunbird/sunbird-player-sdk-v9';
+import {SunbirdPlayerSdkModule} from '@dicdikshaorg/player-sdk-v9'
 
 @NgModule({
   declarations: [
