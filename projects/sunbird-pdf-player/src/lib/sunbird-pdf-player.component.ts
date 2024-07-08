@@ -13,6 +13,7 @@ import { ViewerService } from './services/viewer.service';
 import { SunbirdPdfPlayerService } from './sunbird-pdf-player.service';
 import * as _ from 'lodash';
 import { ErrorService, errorCode, errorMessage } from '@project-sunbird/sunbird-player-sdk-v9';
+import { HttpClient} from "@angular/common/http";
 
 @Component({
   selector: 'sunbird-pdf-player',
@@ -53,13 +54,36 @@ export class SunbirdPdfPlayerComponent implements OnInit, OnDestroy, OnChanges, 
   private unlistenMouseLeave: () => void;
   showContentError: boolean;
   defaultCompatibilityLevel = 4;
+  url: string = 'https://meity-auth.ulcacontrib.org/ulca/apis/v0/model/compute';
+  audio: any = '';
+  audioQueue: any[] = [];
+  isPlaying: boolean = false;
+  counter: number = 0;
+  loading: boolean = false;
+  chunks=[]
+  isStreamIntrupted: boolean =false;
+  languageList =[
+    {languageCode:'en',modelId:'6576a17e00d64169e2f8f43d'},
+    {languageCode:'hi',modelId:'6576a1e500d64169e2f8f43e'},
+    {languageCode:'as',modelId:'6576a15e00d64169e2f8f43c'},
+    {languageCode:'bn',modelId:'6348db11fb796d5e100d4ffb'},
+    {languageCode:'gu',modelId:'6348db16fd966563f61bc2c1'},
+    {languageCode:'kn',modelId:'6576a2344e7d42484da63534'},
+    {languageCode:'mr',modelId:'633c02befd966563f61bc2be'},
+    {languageCode:'or',modelId:'6348db26fd966563f61bc2c2'},
+    {languageCode:'pa',modelId:'6576a27800d64169e2f8f440'},
+    {languageCode:'ta',modelId:'6348db32fd966563f61bc2c3'},
+    {languageCode:'te',modelId:'6348db37fb796d5e100d4ffe'},
+    {languageCode:'ur',modelId:'6576a2b000d64169e2f8f442'}
+  ]
 
   constructor(
     public pdfPlayerService: SunbirdPdfPlayerService,
     public viewerService: ViewerService,
     private cdRef: ChangeDetectorRef,
     private renderer2: Renderer2,
-    public errorService: ErrorService
+    public errorService: ErrorService,
+    public http: HttpClient
   ) {
 
     this.playerEvent = this.viewerService.playerEvent;
@@ -120,6 +144,166 @@ export class SunbirdPdfPlayerComponent implements OnInit, OnDestroy, OnChanges, 
     this.viewerActions.emit({ type, data });
     this.viewerService.raiseHeartBeatEvent(type);
 
+  }
+
+  handleNotification() {
+    this.handleButtonstop();
+  }
+  
+  handleButtonplay(){
+    this.audio.play();
+  }
+
+  handleButtonpause(){
+    this.audio.pause();
+  }
+  handleButtonstop() {
+    this.audio.pause();
+    this.audio.src ='';
+    this.isStreamIntrupted = true;
+    console.log(this.audio,"emptied audio");
+    this.counter =0;
+    this.isPlaying =false;
+   
+  }
+  getModelId(languageCode:string) {
+    const language = this.languageList.find(lang => lang.languageCode === languageCode);
+    console.log(language.modelId)
+    return language ? language.modelId : null;
+  }
+
+  async detectLanguage(chunk: string): Promise<string | null> {
+    return new Promise((resolve, reject) => {
+      const payload ={
+        input: [
+          { source: chunk }
+        ],
+        modelId: "631736990154d6459973318e",
+        task: "txt-lang-detection",
+        userId: "49eb8255277b40ddb7d706a100b36268"
+      };
+  
+      this.http.post(this.url, payload).subscribe(
+        (res: any) => {
+          const langCode = res.output[0].langPrediction[0].langCode;
+          const modelId = this.getModelId(langCode);
+          resolve(modelId);
+        },
+        error => {
+          console.error('Error detecting language:', error);
+          resolve(null); // Resolve with null if there's an error
+        }
+      );
+    });
+  }
+  
+   async handleButtonClick(gender: any) {
+        this.isStreamIntrupted =false;
+        this.audioQueue =[]
+        let container = document.querySelector('pdf-viewer');
+        if (container) {
+        let iframe = container.querySelector('iframe');
+        if (iframe) {
+            const pageNumber = document.querySelector(".page-count").getAttribute('current-page-number');
+            var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+            var elementInsideIframe = iframeDoc.querySelector('#viewer');
+            console.log(elementInsideIframe,'this is irame')
+            const textLayer = elementInsideIframe.getElementsByClassName('textLayer')[pageNumber];
+            const spans = textLayer.querySelectorAll('span');
+            let extractedText = '';
+            spans.forEach(span => {
+                  extractedText += span.textContent + '\n';
+            });
+              console.log(extractedText,'this is extracted text');
+              this.chunks = this.chunkText(extractedText, 500);
+              for (let i = 0; i < this.chunks.length; i++) {
+                if(!this.isStreamIntrupted){
+                  console.log(this.chunks[i], 'this is chunks');
+                  const modelId = await this.detectLanguage(this.chunks[i]);
+                  await this.processChunk(this.chunks[i], gender,modelId);
+                }
+                else{
+                  this.chunks =[];
+                  break;
+                }
+                }
+        } 
+       
+      }
+    }
+  
+  async processChunk(chunk: string, gender: any,modelId: string | null) {
+    if (!modelId) {
+      console.error('Model ID not found.');
+      return;
+    }
+  
+    const payload = {
+      modelId:modelId,
+      task: 'tts',
+      input: [{ source: chunk }],
+      gender: gender,
+      userId: '49eb8255277b40ddb7d706a100b36268',
+    };
+  
+    try {
+      const response: any = await this.http.post(this.url, payload).toPromise();
+      console.log(response);
+  
+      const audioContent = response.audio[0].audioContent;
+      const base64Audio = audioContent;
+      const audioUrl = 'data:audio/mp3;base64,' + base64Audio;
+      console.log(audioUrl,'this is audio Url')
+      this.audioQueue.push(audioUrl);
+  
+      if (!this.isPlaying) {
+        this.playNextAudio();
+      }
+    } catch (error) {
+      this.loading = false;
+      console.error('Error processing audio:', error);
+    }
+  }
+  playNextAudio() {
+    console.log('play next audio',this.audioQueue.length)
+    if (this.audioQueue.length > 0 && !this.isStreamIntrupted) {
+      console.log('counter ' ,this.counter)
+      this.loading = false;
+      const audioUrl = this.audioQueue[this.counter++]; //this.audioQueue.shift();
+      
+      this.audio = new Audio(audioUrl);
+      this.audio.controls = true;
+      
+      this.isPlaying = true;
+
+      // Play the audio
+      this.audio.play();
+  
+  
+      // Listen for audio end event to play the next audio
+      this.audio.addEventListener('ended', () => {
+        // Reset flag when audio ends
+        this.isPlaying = false;
+  
+        // Play the next audio in the queue
+        this.playNextAudio();
+      });
+    }
+     else {
+      // No more audio in the queue, reset flag
+      this.isPlaying = false;
+    }
+  }
+
+   // Function to split text into chunks
+   chunkText(text: string, chunkSize: number): string[] {
+    const chunks: string[] = [];
+    if (!text) return chunks; // Return empty array if text is falsy
+  
+    for (let i = 0; i < text.length; i += chunkSize) {
+      chunks.push(text.substring(i, i + chunkSize));
+    }
+    return chunks;
   }
 
   playContent(event) {

@@ -1,6 +1,6 @@
 {
   "name": "@dicdikshaorg/pdf-player",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "private":false,
   "peerDependencies": {
     "@angular/common": ">= 9.1.12",
