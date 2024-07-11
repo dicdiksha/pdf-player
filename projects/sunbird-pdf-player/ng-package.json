@@ -5,6 +5,7 @@
     "entryFile": "src/public-api.ts"
   },
   "whitelistedNonPeerDependencies": [
-    "@project-sunbird/sunbird-player-sdk-v9"
+    "@project-sunbird/sunbird-player-sdk-v9",
+    "@dicdikshaorg/player-sdk-v9"
   ]
 }

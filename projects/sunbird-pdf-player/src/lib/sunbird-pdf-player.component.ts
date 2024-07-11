@@ -161,14 +161,12 @@ export class SunbirdPdfPlayerComponent implements OnInit, OnDestroy, OnChanges, 
     this.audio.pause();
     this.audio.src ='';
     this.isStreamIntrupted = true;
-    console.log(this.audio,"emptied audio");
     this.counter =0;
     this.isPlaying =false;
    
   }
   getModelId(languageCode:string) {
     const language = this.languageList.find(lang => lang.languageCode === languageCode);
-    console.log(language.modelId)
     return language ? language.modelId : null;
   }
 
@@ -207,19 +205,19 @@ export class SunbirdPdfPlayerComponent implements OnInit, OnDestroy, OnChanges, 
             const pageNumber = document.querySelector(".page-count").getAttribute('current-page-number');
             var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
             var elementInsideIframe = iframeDoc.querySelector('#viewer');
-            console.log(elementInsideIframe,'this is irame')
-            const textLayer = elementInsideIframe.getElementsByClassName('textLayer')[pageNumber];
+            const textLayer = elementInsideIframe.getElementsByClassName('textLayer')[parseInt(pageNumber)-1];
             const spans = textLayer.querySelectorAll('span');
             let extractedText = '';
             spans.forEach(span => {
                   extractedText += span.textContent + '\n';
             });
-              console.log(extractedText,'this is extracted text');
               this.chunks = this.chunkText(extractedText, 500);
+
+               // Detect language with the first chunk
+              const modelId = await this.detectLanguage(this.chunks[0]);
+  
               for (let i = 0; i < this.chunks.length; i++) {
                 if(!this.isStreamIntrupted){
-                  console.log(this.chunks[i], 'this is chunks');
-                  const modelId = await this.detectLanguage(this.chunks[i]);
                   await this.processChunk(this.chunks[i], gender,modelId);
                 }
                 else{
@@ -248,12 +246,9 @@ export class SunbirdPdfPlayerComponent implements OnInit, OnDestroy, OnChanges, 
   
     try {
       const response: any = await this.http.post(this.url, payload).toPromise();
-      console.log(response);
-  
       const audioContent = response.audio[0].audioContent;
       const base64Audio = audioContent;
       const audioUrl = 'data:audio/mp3;base64,' + base64Audio;
-      console.log(audioUrl,'this is audio Url')
       this.audioQueue.push(audioUrl);
   
       if (!this.isPlaying) {
@@ -265,9 +260,7 @@ export class SunbirdPdfPlayerComponent implements OnInit, OnDestroy, OnChanges, 
     }
   }
   playNextAudio() {
-    console.log('play next audio',this.audioQueue.length)
     if (this.audioQueue.length > 0 && !this.isStreamIntrupted) {
-      console.log('counter ' ,this.counter)
       this.loading = false;
       const audioUrl = this.audioQueue[this.counter++]; //this.audioQueue.shift();
       
@@ -324,6 +317,7 @@ export class SunbirdPdfPlayerComponent implements OnInit, OnDestroy, OnChanges, 
   }
 
   exitContent(event) {
+    this.handleButtonstop();
     this.viewerService.raiseHeartBeatEvent(event.type);
   }
 
@@ -416,6 +410,7 @@ export class SunbirdPdfPlayerComponent implements OnInit, OnDestroy, OnChanges, 
 
   @HostListener('window:beforeunload')
   ngOnDestroy() {
+    this.handleButtonstop();
     this.viewerService.raiseEndEvent();
     if (this.subscription) {
       this.subscription.unsubscribe();
