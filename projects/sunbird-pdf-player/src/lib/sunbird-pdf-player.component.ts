@@ -76,6 +76,7 @@ export class SunbirdPdfPlayerComponent implements OnInit, OnDestroy, OnChanges, 
     {languageCode:'te',modelId:'6348db37fb796d5e100d4ffe'},
     {languageCode:'ur',modelId:'6576a2b000d64169e2f8f442'}
   ]
+  playbackRate: number = 1.0;
 
   constructor(
     public pdfPlayerService: SunbirdPdfPlayerService,
@@ -144,6 +145,14 @@ export class SunbirdPdfPlayerComponent implements OnInit, OnDestroy, OnChanges, 
     this.viewerActions.emit({ type, data });
     this.viewerService.raiseHeartBeatEvent(type);
 
+  }
+
+  onPlaybackRateChange(event: any) {
+    this.playbackRate = parseFloat(event.target.value);
+    console.log(this.playbackRate,'this is playback rate')
+    if (this.audio) {
+      this.audio.playbackRate = this.playbackRate;
+    }
   }
 
   handleNotification() {
@@ -266,6 +275,7 @@ export class SunbirdPdfPlayerComponent implements OnInit, OnDestroy, OnChanges, 
       
       this.audio = new Audio(audioUrl);
       this.audio.controls = true;
+      this.audio.playbackRate = this.playbackRate;
       
       this.isPlaying = true;
 
